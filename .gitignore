@@ -1,0 +1,35 @@
+node_modules/**/*
+.expo/*
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+web-report/
+# macOS
+.DS_Store
+syntax: glob
+*~
+*.~
+*.pyc
+*.pyo
+dist/
+build/
+_build/
+*.egg-info/
+.eggs/
+.coverage
+*,cover
+node_modules/
+bower_components/
+.tox/
+locale/*.json
+package-lock.json
+.idea/
+__pycache__/
+*.pyc
+.vscode/
+.next/

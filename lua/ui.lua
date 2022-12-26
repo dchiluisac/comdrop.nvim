@@ -1,0 +1,80 @@
+local api = vim.api
+local utils = require 'utils'
+local M = {}
+
+function M.createBuffer(dim, type)
+  local buffer = api.nvim_create_buf(false, true)
+  local border_buf = api.nvim_create_buf(false, true)
+  api.nvim_buf_set_lines(border_buf, 0, -1, false, dim.borderLines)
+  local win = api.nvim_open_win(border_buf, true, dim.borderOpts)
+  api.nvim_buf_set_option(buffer, 'buftype', type)
+  return {
+    buffer = buffer,
+    win = win
+  }
+end
+
+function M.createMain(width, height, setRow, setCol)
+  local row = setRow or 0
+  local col = setCol or 0
+  local dim = utils.getDimensionWin(width, height, row, col)
+  local bufferInstance = M.createBuffer(dim, 'nofile')
+  local buffer = bufferInstance.buffer
+
+
+  --api.nvim_buf_set_option(listBuffer, 'bufhidden', 'wipe')
+  --api.nvim_buf_set_option(listBuffer, 'filetype', 'tagsHelp')
+
+  local opts = {
+    style = "minimal",
+    relative = "editor",
+    width = dim.width,
+    height = dim.height,
+    row = dim.row - 10,
+    col = dim.col,
+    zindex = 1400,
+    focusable = true,
+  }
+
+  --api.nvim_command('au BufWipeout <buffer> exe "silent bwipeout! "' .. border_buf)
+  -- we can add title already here, because first line will never change
+  api.nvim_buf_set_lines(buffer, 0, -1, false, { utils.center('What have i done?'), '', '' })
+  api.nvim_buf_add_highlight(buffer, -1, 'DiagnosticVirtualTextError', 0, 0, -1)
+  local mainWin = api.nvim_open_win(buffer, true, opts)
+  api.nvim_win_set_cursor(mainWin, { 3, 0 })
+  return {
+    win = mainWin,
+    buffer = buffer,
+    winBorder = bufferInstance.win
+  }
+end
+
+function M.createPromp(width, height, setRow, setCol)
+  local row = setRow or 0
+  local col = setCol or 0
+  local dim = utils.getDimensionWin(width, height, row, col)
+  local bufferInstance = M.createBuffer(dim, 'prompt')
+  local buffer = bufferInstance.buffer
+
+  local opts = {
+    style = "minimal",
+    relative = "editor",
+    width = dim.width,
+    height = dim.height,
+    row = dim.row,
+    col = dim.col,
+  }
+
+  local entryMain = api.nvim_open_win(buffer, true, opts)
+  vim.schedule(function()
+    vim.cmd [[startinsert]]
+    --vim.api.nvim_put({"xs","Cdc"}, "c", false, true)
+  end)
+  return {
+    win = entryMain,
+    buffer = buffer,
+    winBorder = bufferInstance.win
+  }
+end
+
+return M
