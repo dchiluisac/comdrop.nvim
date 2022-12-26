@@ -1,7 +1,7 @@
 local api = vim.api
+local o = vim.o
 
 local M = {}
-
 
 M.borders = {
   top_left = "╭",
@@ -46,7 +46,7 @@ function M.getDimensionWin(width, height, setRow, setCol)
         borders.top_right
   }
   local middle_line = borders.mid .. string.rep(' ', dimensions.width) .. borders.mid
-  for i = 1, dimensions.height do
+  for _ = 1, dimensions.height do
     table.insert(borderLines, middle_line)
   end
   table.insert(
@@ -76,19 +76,18 @@ function M.bufDelete(buf)
   if buf == nil then
     return
   end
-
   -- Suppress the buffer deleted message for those with &report<2
   local start_report = vim.o.report
   if start_report < 2 then
-    vim.o.report = 2
+    o.report = 2
   end
 
-  if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) then
-    vim.api.nvim_buf_delete(buf, { force = true })
+  if api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) then
+    api.nvim_buf_delete(buf, { force = true })
   end
 
   if start_report < 2 then
-    vim.o.report = start_report
+    o.report = start_report
   end
 end
 
