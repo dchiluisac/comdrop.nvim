@@ -1,5 +1,6 @@
 local api = vim.api
-local utils = require 'utils'
+local utils = require('utils')
+local internal = require('internal')
 local M = {}
 
 function M.createBuffer(dim, type)
@@ -21,9 +22,6 @@ function M.createMain(width, height, setRow, setCol)
   local bufferInstance = M.createBuffer(dim, 'nofile')
   local buffer = bufferInstance.buffer
 
-  --api.nvim_buf_set_option(listBuffer, 'bufhidden', 'wipe')
-  --api.nvim_buf_set_option(listBuffer, 'filetype', 'tagsHelp')
-
   local opts = {
     style = "minimal",
     relative = "editor",
@@ -34,10 +32,8 @@ function M.createMain(width, height, setRow, setCol)
     zindex = 1400,
   }
 
-  --api.nvim_command('au BufWipeout <buffer> exe "silent bwipeout! "' .. border_buf)
-  -- we can add title already here, because first line will never change
-  api.nvim_buf_set_lines(buffer, 0, -1, false, { utils.center('What have i done?'), '', '' })
-  api.nvim_buf_add_highlight(buffer, -1, 'DiagnosticVirtualTextError', 0, 0, -1)
+  api.nvim_buf_set_lines(buffer, 0, -1, false, { utils.center('Commands Drop'), '', '' })
+  api.nvim_buf_add_highlight(buffer, -1, internal.highlights.ComdropSelection.link, 0, 0, -1)
   local mainWin = api.nvim_open_win(buffer, true, opts)
   api.nvim_win_set_cursor(mainWin, { 3, 0 })
   return {

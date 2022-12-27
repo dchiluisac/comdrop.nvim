@@ -1,6 +1,14 @@
 local M = {}
 
-M.nameSpace = 'tags-help-list-name-space'
+M.highlights = {
+  ComdropSelection = { default = true, link = "Visual" },
+}
+
+for k, v in pairs(M.highlights) do
+  vim.api.nvim_set_hl(0, k, v)
+end
+
+M.nameSpace = 'comdrop-list-name-space'
 
 M.listCommands = {
   [1] = { title = 'Telescope', command = 'Telescope' },
