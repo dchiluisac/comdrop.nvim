@@ -6,22 +6,25 @@ local M = {}
 
 function M.createBuffer(dim, type)
   local buffer = api.nvim_create_buf(false, true)
-  local border_buf = api.nvim_create_buf(false, true)
-  api.nvim_buf_set_lines(border_buf, 0, -1, false, dim.borderLines)
-  local win = api.nvim_open_win(border_buf, true, dim.borderOpts)
+  local borderBuffer = api.nvim_create_buf(false, true)
+  api.nvim_buf_set_lines(borderBuffer, 0, -1, false, dim.borderLines)
+  local win = api.nvim_open_win(borderBuffer, true, dim.borderOpts)
   api.nvim_buf_set_option(buffer, 'buftype', type)
   return {
     buffer = buffer,
-    win = win
+    win = win,
+    borderBuffer = borderBuffer
   }
 end
 
 function M.createMain(width, height, setRow, setCol)
   local row = setRow or 0
   local col = setCol or 0
-  local dim = utils.getDimensionWin(width, height, row, col)
+  local title = " Commands list "
+  local dim = utils.getDimensionWin(width, height, row, col, title)
   local bufferInstance = M.createBuffer(dim, 'nofile')
   local buffer = bufferInstance.buffer
+  local borderBuffer = bufferInstance.borderBuffer
 
   local opts = {
     style = "minimal",
@@ -32,11 +35,11 @@ function M.createMain(width, height, setRow, setCol)
     col = dim.col + col,
     zindex = 1400,
   }
-
-  api.nvim_buf_set_lines(buffer, 0, -1, false, { utils.center('Commands Drop'), '', '' })
-  api.nvim_buf_add_highlight(buffer, -1, hi.ComdropTitle.link, 0, 0, -1)
+  local firstLineBorder = api.nvim_buf_get_lines(borderBuffer, 0, 1, false)[1]
+  local startPos, endPos = string.find(firstLineBorder, title)
+  api.nvim_buf_add_highlight(borderBuffer, -1, hi.ComdropTitle.link, 0, startPos, endPos)
   local mainWin = api.nvim_open_win(buffer, true, opts)
-  api.nvim_win_set_cursor(mainWin, { 3, 0 })
+  api.nvim_win_set_cursor(mainWin, { 1, 0 })
   return {
     win = mainWin,
     buffer = buffer,

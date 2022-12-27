@@ -26,13 +26,13 @@ function M.updateView(direction, commands)
   api.nvim_buf_set_option(listBuffer, 'modifiable', true)
   position = position + direction
   if position < 0 then position = 0 end
-  api.nvim_buf_set_lines(listBuffer, 3, -1, false, listRender)
+  api.nvim_buf_set_lines(listBuffer, 1, -1, false, listRender)
   api.nvim_buf_set_option(listBuffer, 'modifiable', false)
   local currentPosition = api.nvim_win_get_cursor(listWin)[1]
   api.nvim_buf_add_highlight(listBuffer, nameSpaceList,
     hi.ComdropSelection.link, currentPosition
-    , 3, -1)
-  api.nvim_win_set_cursor(listWin, { 3, 0 })
+    , 1, -1)
+  api.nvim_win_set_cursor(listWin, { 1, 0 })
 end
 
 function M.setMappingPrompt()
@@ -49,7 +49,7 @@ function M.moveCursor(direction)
   local newPosition = 0
 
   if direction == "up" then
-    newPosition = math.max(3, currentPosition - 1)
+    newPosition = math.max(1, currentPosition - 1)
   else if direction == "down" then
       newPosition = math.min(maxHeight - 1, currentPosition + 1)
     end
@@ -58,7 +58,7 @@ function M.moveCursor(direction)
   api.nvim_buf_clear_namespace(listBuffer, nameSpaceList, currentPosition, -1)
   api.nvim_buf_add_highlight(listBuffer, nameSpaceList,
     hi.ComdropSelection.link,
-    newPosition, 3, -1)
+    newPosition, 1, -1)
   api.nvim_win_set_cursor(listWin, { newPosition, 0 })
 end
 

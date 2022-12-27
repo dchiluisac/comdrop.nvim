@@ -31,7 +31,7 @@ function M.adjust(value, width)
 
 end
 
-function M.getDimensionWin(width, height, setRow, setCol)
+function M.getDimensionWin(width, height, setRow, setCol, title)
   local row = setRow or 0
   local col = setCol or 0
   local dimensions = M.getDimensions(width, height)
@@ -43,9 +43,17 @@ function M.getDimensionWin(width, height, setRow, setCol)
     row = dimensions.row - 1 + row,
     col = dimensions.col - 1 + col,
   }
+
+  local topMidLine = ''
+  if title ~= nil then
+    topMidLine = M.center(title, dimensions.width)
+  else
+    topMidLine = string.rep(borders.top_mid, dimensions.width)
+  end
+
   local borderLines = {
     borders.top_left ..
-        string.rep(borders.top_mid, dimensions.width) ..
+        topMidLine ..
         borders.top_right
   }
   local middle_line = borders.mid .. string.rep(' ', dimensions.width) .. borders.mid
@@ -58,7 +66,6 @@ function M.getDimensionWin(width, height, setRow, setCol)
     borders.bottom_right
   )
 
-
   return {
     borderOpts = opts,
     borderLines = borderLines,
@@ -69,10 +76,12 @@ function M.getDimensionWin(width, height, setRow, setCol)
   }
 end
 
-function M.center(str)
-  local width = api.nvim_win_get_width(0)
-  local shift = math.floor(width / 2) - math.floor(string.len(str) / 2)
-  return string.rep(' ', shift) .. str
+function M.center(str, width)
+  local borderMaxWidth = (width - string.len(str)) / 2
+  local borderWidth = math.floor(borderMaxWidth)
+  local diff = borderMaxWidth * 2 - math.floor(borderWidth * 2)
+  return string.rep(borders.top_mid, borderWidth) .. str ..
+      string.rep(borders.top_mid, borderWidth + diff)
 end
 
 function M.bufDelete(buf)
