@@ -9,7 +9,7 @@ if exists('g:loaded_comdrop') | finish | endif " prevent loading file twice
 let s:save_cpo = &cpo 
 set cpo&vim
 
-command! TagsHelp lua require'comdrop'.init()
+command! ComDrop lua require'comdrop'.init()
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
