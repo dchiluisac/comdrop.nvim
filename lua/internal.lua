@@ -1,6 +1,8 @@
 local Path = require "plenary.path"
 local M = {}
 
+M.systemCommands = true
+
 M.highlights = {
   ComdropSelection = { default = true, link = "Visual" },
   ComdropTitle = { default = true, link = "ComdropTitle" },
@@ -68,8 +70,19 @@ local function getCommandsNvim()
   end
 end
 
-function M.concatCommands(commands)
-  getCommandsNvim()
+function M.isSystemCommands(systemCommands)
+  print(systemCommands)
+  if systemCommands ~= nil then
+    return systemCommands
+  end
+  return M.systemCommands
+end
+
+function M.concatCommands(commands, systemCommands)
+  local enableSystemCommands = M.isSystemCommands(systemCommands)
+  if enableSystemCommands then
+    getCommandsNvim()
+  end
   if commands ~= nil then
     local newCommands = M.listCommands
     for _, value in ipairs(commands) do
@@ -82,7 +95,7 @@ end
 
 M.setup = function(opts)
   opts           = opts or {}
-  M.listCommands = M.concatCommands(opts.listCommands)
+  M.listCommands = M.concatCommands(opts.listCommands, opts.systemCommands)
   M.borders      = opts.borders or M.borders
 end
 
