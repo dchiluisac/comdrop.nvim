@@ -21,44 +21,51 @@ end
 function M.updateView(direction, commands)
   local listRender = {}
   for _, value in ipairs(commands) do
-    table.insert(listRender, '   ' .. value.title)
+    table.insert(listRender, '  ' .. value.title)
   end
   api.nvim_buf_set_option(listBuffer, 'modifiable', true)
   position = position + direction
   if position < 0 then position = 0 end
   api.nvim_buf_set_lines(listBuffer, 1, -1, false, listRender)
-  api.nvim_buf_set_option(listBuffer, 'modifiable', false)
   local currentPosition = api.nvim_win_get_cursor(listWin)[1]
+  api.nvim_win_set_cursor(listWin, { 1, 0 })
+  if #listRender ~= 0 then
+    api.nvim_buf_set_text(listBuffer, 1, 0, 1, 1, { '>' })
+  end
   api.nvim_buf_add_highlight(listBuffer, nameSpaceList,
     hi.ComdropSelection.link, currentPosition
-    , 1, -1)
-  api.nvim_win_set_cursor(listWin, { 1, 0 })
+    , 0, -1)
+  api.nvim_buf_set_option(listBuffer, 'modifiable', false)
 end
 
 function M.setMappingPrompt()
   local opts = { noremap = true, silent = true, nowait = true }
-  api.nvim_buf_set_keymap(entryBuffer, '!', '<esc>', [[<C-\><C-n>:lua require"comdrop".closeWindow()<CR>]], opts)
-  api.nvim_buf_set_keymap(entryBuffer, '!', '<Up>', [[<cmd> :lua require("comdrop").moveCursor("up")<CR>]], opts)
-  api.nvim_buf_set_keymap(entryBuffer, '!', '<Down>', [[<cmd> :lua require("comdrop").moveCursor("down")<CR>]], opts)
-  api.nvim_buf_set_keymap(entryBuffer, '!', '<cr>', [[<cmd> :lua require("comdrop").runCommand()<CR>]], opts)
+  api.nvim_buf_set_keymap(entryBuffer, 'i', '<esc>', [[<C-\><C-n>:lua require"comdrop".closeWindow()<CR>]], opts)
+  api.nvim_buf_set_keymap(entryBuffer, 'i', '<Up>', [[<cmd> :lua require("comdrop").moveCursor("up")<CR>]], opts)
+  api.nvim_buf_set_keymap(entryBuffer, 'i', '<Down>', [[<cmd> :lua require("comdrop").moveCursor("down")<CR>]], opts)
+  api.nvim_buf_set_keymap(entryBuffer, 'i', '<cr>', [[<cmd> :lua require("comdrop").runCommand()<CR>]], opts)
 end
 
 function M.moveCursor(direction)
-  local currentPosition = api.nvim_win_get_cursor(listWin)[1]
+  local currentPosition = api.nvim_win_get_cursor(listWin)
+  local row = currentPosition[1]
+  local col = currentPosition[2]
   local maxHeight = api.nvim_buf_line_count(listBuffer)
   local newPosition = 0
 
   if direction == "up" then
-    newPosition = math.max(1, currentPosition - 1)
+    newPosition = math.max(1, row - 1)
   else if direction == "down" then
-      newPosition = math.min(maxHeight - 1, currentPosition + 1)
+      newPosition = math.min(maxHeight - 1, row + 1)
     end
   end
 
-  api.nvim_buf_clear_namespace(listBuffer, nameSpaceList, currentPosition, -1)
-  api.nvim_buf_add_highlight(listBuffer, nameSpaceList,
-    hi.ComdropSelection.link,
-    newPosition, 1, -1)
+  api.nvim_buf_clear_namespace(listBuffer, nameSpaceList, row, -1)
+  api.nvim_buf_set_option(listBuffer, 'modifiable', true)
+  api.nvim_buf_set_text(listBuffer, row, col, row, col + 1, { ' ' })
+  api.nvim_buf_set_text(listBuffer, newPosition, col, newPosition, col + 1, { '>' })
+  api.nvim_buf_set_option(listBuffer, 'modifiable', false)
+  api.nvim_buf_add_highlight(listBuffer, nameSpaceList, hi.ComdropSelection.link, newPosition, 0, -1)
   api.nvim_win_set_cursor(listWin, { newPosition, 0 })
 end
 
@@ -66,6 +73,7 @@ function M.runCommand()
   local currentPosition = api.nvim_win_get_cursor(listWin)[1]
   local str = api.nvim_buf_get_lines(listBuffer, currentPosition, currentPosition + 1, true)[1]
   local commandSelected = string.gsub(str, "%s+", "")
+  commandSelected = string.gsub(commandSelected, ">", "")
   for _, value in ipairs(internal.listCommands) do
     local command = string.gsub(value.title, "%s+", "")
     if command == commandSelected then
