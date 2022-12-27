@@ -72,6 +72,7 @@ end
 function M.runCommand()
   local currentPosition = api.nvim_win_get_cursor(listWin)[1]
   local str = api.nvim_buf_get_lines(listBuffer, currentPosition, currentPosition + 1, true)[1]
+  M.closeWindow()
   local commandSelected = string.gsub(str, "%s+", "")
   commandSelected = string.gsub(commandSelected, ">", "")
   for _, value in ipairs(internal.listCommands) do
@@ -79,12 +80,13 @@ function M.runCommand()
     if command == commandSelected then
       if value.delay ~= nil then
         utils.delay(value.command)
+        break
       else
         vim.api.nvim_command(value.command)
+        break
       end
     end
   end
-  M.closeWindow()
 end
 
 local function filter_inplace(t, val)
