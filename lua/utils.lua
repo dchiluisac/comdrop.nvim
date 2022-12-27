@@ -1,6 +1,6 @@
 local api = vim.api
 local o = vim.o
-local borders = require('internal').borders
+local internal = require('internal')
 
 local M = {}
 
@@ -32,6 +32,7 @@ function M.adjust(value, width)
 end
 
 function M.getDimensionWin(width, height, setRow, setCol, title)
+  local borders = internal.borders
   local row = setRow or 0
   local col = setCol or 0
   local dimensions = M.getDimensions(width, height)
@@ -77,6 +78,7 @@ function M.getDimensionWin(width, height, setRow, setCol, title)
 end
 
 function M.center(str, width)
+  local borders = internal.borders
   local borderMaxWidth = (width - string.len(str)) / 2
   local borderWidth = math.floor(borderMaxWidth)
   local diff = borderMaxWidth * 2 - math.floor(borderWidth * 2)
