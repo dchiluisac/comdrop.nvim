@@ -27,6 +27,18 @@ function M.getDimensions(width, height)
   }
 end
 
+function M.adjust(value, width)
+  if width == true then
+    local widthWindow = api.nvim_get_option("columns")
+    local x           = (value / 100) * widthWindow
+    return math.ceil(x)
+  end
+  local heightWindow = api.nvim_get_option("lines")
+  local x            = (value / 100) * heightWindow
+  return math.ceil(x)
+
+end
+
 function M.getDimensionWin(width, height, setRow, setCol)
   local row = setRow or 0
   local col = setCol or 0
@@ -89,6 +101,14 @@ function M.bufDelete(buf)
   if start_report < 2 then
     o.report = start_report
   end
+end
+
+function M.delay(command, ms)
+  local msDelay = ms or 10
+  local timer = vim.loop.new_timer()
+  timer:start(msDelay, 0, vim.schedule_wrap(function()
+    api.nvim_command(command)
+  end))
 end
 
 return M

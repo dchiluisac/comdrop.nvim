@@ -21,7 +21,6 @@ function M.createMain(width, height, setRow, setCol)
   local bufferInstance = M.createBuffer(dim, 'nofile')
   local buffer = bufferInstance.buffer
 
-
   --api.nvim_buf_set_option(listBuffer, 'bufhidden', 'wipe')
   --api.nvim_buf_set_option(listBuffer, 'filetype', 'tagsHelp')
 
@@ -30,10 +29,9 @@ function M.createMain(width, height, setRow, setCol)
     relative = "editor",
     width = dim.width,
     height = dim.height,
-    row = dim.row - 10,
-    col = dim.col,
+    row = dim.row + row,
+    col = dim.col + col,
     zindex = 1400,
-    focusable = true,
   }
 
   --api.nvim_command('au BufWipeout <buffer> exe "silent bwipeout! "' .. border_buf)
@@ -52,7 +50,8 @@ end
 function M.createPromp(width, height, setRow, setCol)
   local row = setRow or 0
   local col = setCol or 0
-  local dim = utils.getDimensionWin(width, height, row, col)
+  local adjust = utils.adjust(20)
+  local dim = utils.getDimensionWin(width, height, row + adjust, col)
   local bufferInstance = M.createBuffer(dim, 'prompt')
   local buffer = bufferInstance.buffer
 
@@ -61,8 +60,8 @@ function M.createPromp(width, height, setRow, setCol)
     relative = "editor",
     width = dim.width,
     height = dim.height,
-    row = dim.row,
-    col = dim.col,
+    row = dim.row + row + adjust,
+    col = dim.col + col,
   }
 
   local entryMain = api.nvim_open_win(buffer, true, opts)
