@@ -1,3 +1,4 @@
+local Path = require "plenary.path"
 local M = {}
 
 M.highlights = {
@@ -22,25 +23,48 @@ M.nameSpace = 'comdrop-list-name-space'
 
 M.listCommands = {
   { title = 'New tab', command = 'tabnew' },
-  { title = 'diagnostic_jump_next', command = 'Lspsaga diagnostic_jump_next', delay = true },
-  { title = 'diagnostic_jump_prev', command = 'Lspsaga diagnostic_jump_prev', delay = true },
 }
 
 local function getCommandsNvim()
-  local scripts = vim.api.nvim_command_output("command")
-  local dd = vim.split(scripts, '\n')
-  for _, value in pairs(dd) do
-    local line = string.gsub(value, "%s+", "")
-    line = string.gsub(line, "0", "-split-")
-    line = string.gsub(line, "*", "-split-")
-    line = string.gsub(line, "?", "-split-")
-    line = string.gsub(line, "+", "-split-")
-    line = string.gsub(line, "1", "-split-")
-    local command = vim.split(line, '-split-')[1]
+  local files = {}
+  local help_files = {}
+  local all_files = vim.api.nvim_get_runtime_file("doc/*", true)
+  for _, fullpath in ipairs(all_files) do
+    local file = require('utils').path_tail(fullpath)
+    if file == "tags" then
+      table.insert(files, fullpath)
+    else
+      help_files[file] = fullpath
+    end
+  end
+
+  local tags = {}
+  local tags_map = {}
+  local delimiter = string.char(9)
+  for _, file in ipairs(files or {}) do
+    local lines = vim.split(Path:new(file):read(), "\n", true)
+    for _, line in ipairs(lines) do
+      if not line:match "^!_TAG_" then
+        local fields = vim.split(line, delimiter, true)
+        if #fields == 3 and not tags_map[fields[1]] then
+          if fields[1] ~= "help-tags" or fields[2] ~= "tags" then
+            table.insert(tags, {
+              name = fields[1],
+              filename = help_files[fields[2]],
+              cmd = fields[3],
+            })
+            tags_map[fields[1]] = true
+          end
+        end
+      end
+    end
+  end
+  for _, value in ipairs(tags) do
     table.insert(M.listCommands, {
-      title = command,
-      command = command,
+      title = string.gsub(value.name, ':', ''),
+      command = value.name,
     })
+
   end
 end
 
