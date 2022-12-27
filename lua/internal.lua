@@ -21,14 +21,44 @@ M.borders = {
 M.nameSpace = 'comdrop-list-name-space'
 
 M.listCommands = {
-  [1] = { title = 'Telescope', command = 'Telescope' },
-  [2] = { title = 'diagnostic_jump_next', command = 'Lspsaga diagnostic_jump_next', delay = true },
-  [3] = { title = 'diagnostic_jump_prev', command = 'Lspsaga diagnostic_jump_prev', delay = true },
+  { title = 'New tab', command = 'tabnew' },
+  { title = 'diagnostic_jump_next', command = 'Lspsaga diagnostic_jump_next', delay = true },
+  { title = 'diagnostic_jump_prev', command = 'Lspsaga diagnostic_jump_prev', delay = true },
 }
+
+local function getCommandsNvim()
+  local scripts = vim.api.nvim_command_output("command")
+  local dd = vim.split(scripts, '\n')
+  for _, value in pairs(dd) do
+    local line = string.gsub(value, "%s+", "")
+    line = string.gsub(line, "0", "-split-")
+    line = string.gsub(line, "*", "-split-")
+    line = string.gsub(line, "?", "-split-")
+    line = string.gsub(line, "+", "-split-")
+    line = string.gsub(line, "1", "-split-")
+    local command = vim.split(line, '-split-')[1]
+    table.insert(M.listCommands, {
+      title = command,
+      command = command,
+    })
+  end
+end
+
+function M.concatCommands(commands)
+  getCommandsNvim()
+  if commands ~= nil then
+    local newCommands = M.listCommands
+    for _, value in ipairs(commands) do
+      table.insert(newCommands, value)
+    end
+    return newCommands
+  end
+  return M.listCommands
+end
 
 M.setup = function(opts)
   opts           = opts or {}
-  M.listCommands = opts.listCommands or M.listCommands
+  M.listCommands = M.concatCommands(opts.listCommands)
   M.borders      = opts.borders or M.borders
 end
 
