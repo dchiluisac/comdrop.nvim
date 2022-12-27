@@ -6,6 +6,7 @@ local listWin, listBuffer, listBorderWin
 local entryWin, entryBuffer, entryBorderWin
 local position = 0
 local nameSpaceList = api.nvim_create_namespace(internal.nameSpace)
+local hi = internal.highlights
 local M = {}
 
 function M.closeWindow()
@@ -29,7 +30,7 @@ function M.updateView(direction, commands)
   api.nvim_buf_set_option(listBuffer, 'modifiable', false)
   local currentPosition = api.nvim_win_get_cursor(listWin)[1]
   api.nvim_buf_add_highlight(listBuffer, nameSpaceList,
-    internal.highlights.ComdropSelection.link, currentPosition
+    hi.ComdropSelection.link, currentPosition
     , 3, -1)
   api.nvim_win_set_cursor(listWin, { 3, 0 })
 end
@@ -56,7 +57,7 @@ function M.moveCursor(direction)
 
   api.nvim_buf_clear_namespace(listBuffer, nameSpaceList, currentPosition, -1)
   api.nvim_buf_add_highlight(listBuffer, nameSpaceList,
-    internal.highlights.ComdropSelection.link,
+    hi.ComdropSelection.link,
     newPosition, 3, -1)
   api.nvim_win_set_cursor(listWin, { newPosition, 0 })
 end

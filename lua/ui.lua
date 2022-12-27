@@ -1,6 +1,7 @@
 local api = vim.api
 local utils = require('utils')
 local internal = require('internal')
+local hi = internal.highlights
 local M = {}
 
 function M.createBuffer(dim, type)
@@ -33,7 +34,7 @@ function M.createMain(width, height, setRow, setCol)
   }
 
   api.nvim_buf_set_lines(buffer, 0, -1, false, { utils.center('Commands Drop'), '', '' })
-  api.nvim_buf_add_highlight(buffer, -1, internal.highlights.ComdropSelection.link, 0, 0, -1)
+  api.nvim_buf_add_highlight(buffer, -1, hi.ComdropTitle.link, 0, 0, -1)
   local mainWin = api.nvim_open_win(buffer, true, opts)
   api.nvim_win_set_cursor(mainWin, { 3, 0 })
   return {

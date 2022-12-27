@@ -1,16 +1,8 @@
 local api = vim.api
 local o = vim.o
+local borders = require('internal').borders
 
 local M = {}
-
-M.borders = {
-  top_left = "╭",
-  top_mid = "─",
-  top_right = "╮",
-  mid = "│",
-  bottom_left = "╰",
-  bottom_right = "╯"
-};
 
 function M.getDimensions(width, height)
   local widthWindow = api.nvim_get_option("columns")
@@ -51,7 +43,6 @@ function M.getDimensionWin(width, height, setRow, setCol)
     row = dimensions.row - 1 + row,
     col = dimensions.col - 1 + col,
   }
-  local borders = M.borders;
   local borderLines = {
     borders.top_left ..
         string.rep(borders.top_mid, dimensions.width) ..
