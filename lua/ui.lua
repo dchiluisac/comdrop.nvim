@@ -18,10 +18,8 @@ function M.createBuffer(dim, type)
 end
 
 function M.createMain(width, height, setRow, setCol)
-  local row = setRow or 0
-  local col = setCol or 0
   local title = " Commands list "
-  local dim = utils.getDimensionWin(width, height, row, col, title)
+  local dim = utils.getDimensionWin(width, height, setRow, setCol, title)
   local bufferInstance = M.createBuffer(dim, 'nofile')
   local buffer = bufferInstance.buffer
   local borderBuffer = bufferInstance.borderBuffer
@@ -31,10 +29,11 @@ function M.createMain(width, height, setRow, setCol)
     relative = "editor",
     width = dim.width,
     height = dim.height,
-    row = dim.row + row,
-    col = dim.col + col,
+    row = dim.row,
+    col = dim.col,
     zindex = 1400,
   }
+
   local firstLineBorder = api.nvim_buf_get_lines(borderBuffer, 0, 1, false)[1]
   local startPos, endPos = string.find(firstLineBorder, title)
   api.nvim_buf_add_highlight(borderBuffer, -1, hi.ComdropTitle.link, 0, startPos, endPos)
@@ -43,15 +42,16 @@ function M.createMain(width, height, setRow, setCol)
   return {
     win = mainWin,
     buffer = buffer,
-    winBorder = bufferInstance.win
+    winBorder = bufferInstance.win,
+    row = dim.row,
+    col = dim.col,
+    width = dim.width,
+    height = dim.height
   }
 end
 
 function M.createPromp(width, height, setRow, setCol)
-  local row = setRow or 0
-  local col = setCol or 0
-  local adjust = utils.adjust(20)
-  local dim = utils.getDimensionWin(width, height, row + adjust, col)
+  local dim = utils.getDimensionWin(width, height, setRow, setCol)
   local bufferInstance = M.createBuffer(dim, 'prompt')
   local buffer = bufferInstance.buffer
 
@@ -60,8 +60,8 @@ function M.createPromp(width, height, setRow, setCol)
     relative = "editor",
     width = dim.width,
     height = dim.height,
-    row = dim.row + row + adjust,
-    col = dim.col + col,
+    row = dim.row,
+    col = dim.col,
   }
 
   local entryMain = api.nvim_open_win(buffer, true, opts)
@@ -72,7 +72,11 @@ function M.createPromp(width, height, setRow, setCol)
   return {
     win = entryMain,
     buffer = buffer,
-    winBorder = bufferInstance.win
+    winBorder = bufferInstance.win,
+    row = dim.row,
+    col = dim.col,
+    width = dim.width,
+    height = dim.height
   }
 end
 

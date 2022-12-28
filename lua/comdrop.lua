@@ -115,12 +115,11 @@ end
 
 function M.init()
   position = 0
-  local adjust = utils.adjust(-10)
-  local main = ui.createMain(0.6, 0.3, adjust);
+  local main = ui.createMain(0.6, 0.3);
   listWin = main.win
   listBuffer = main.buffer
   listBorderWin = main.winBorder
-  local entry = ui.createPromp(0.6, 0.02, adjust)
+  local entry = ui.createPromp(0.6, 0.01, main.row + main.height + 2)
   entryWin = entry.win
   entryBuffer = entry.buffer
   entryBorderWin = entry.winBorder

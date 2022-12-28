@@ -21,18 +21,18 @@ M.path_tail = (function()
   end
 end)()
 
-function M.getDimensions(width, height)
+function M.getDimensions(width, height, setRow, setCol)
   local widthWindow = api.nvim_get_option("columns")
   local heightWindow = api.nvim_get_option("lines")
   local win_width = math.ceil(widthWindow * width)
   local win_height = math.ceil(heightWindow * height)
-  local row = math.ceil((heightWindow - win_height) / 2)
+  local row = math.ceil((heightWindow - win_height) / 2) - (0.2 * win_height)
   local col = math.ceil((widthWindow - win_width) / 2)
   return {
     width = win_width,
     height = win_height,
-    row = row,
-    col = col
+    row = setRow or row,
+    col = setCol or col
   }
 end
 
@@ -50,16 +50,14 @@ end
 
 function M.getDimensionWin(width, height, setRow, setCol, title)
   local borders = internal.borders
-  local row = setRow or 0
-  local col = setCol or 0
-  local dimensions = M.getDimensions(width, height)
+  local dimensions = M.getDimensions(width, height, setRow, setCol)
   local opts = {
     style = "minimal",
     relative = "editor",
     width = dimensions.width + 2,
     height = dimensions.height + 2,
-    row = dimensions.row - 1 + row,
-    col = dimensions.col - 1 + col,
+    row = dimensions.row - 1,
+    col = dimensions.col - 1,
   }
 
   local topMidLine = ''
