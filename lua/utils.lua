@@ -1,25 +1,8 @@
 local api = vim.api
 local o = vim.o
 local internal = require('internal')
-local Path = require "plenary.path"
 
 local M = {}
-
-M.get_separator = function()
-  return Path.path.sep
-end
-
-M.path_tail = (function()
-  local os_sep = M.get_separator()
-  return function(path)
-    for i = #path, 1, -1 do
-      if path:sub(i, i) == os_sep then
-        return path:sub(i + 1, -1)
-      end
-    end
-    return path
-  end
-end)()
 
 function M.getDimensions(width, height, setRow, setCol)
   local widthWindow = api.nvim_get_option("columns")
