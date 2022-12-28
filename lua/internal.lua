@@ -2,6 +2,7 @@ local Path = require "plenary.path"
 local M = {}
 
 M.systemCommands = true
+M.loadedSetup = false
 
 M.highlights = {
   ComdropSelection = { default = true, link = "Visual" },
@@ -71,7 +72,6 @@ local function getCommandsNvim()
 end
 
 function M.isSystemCommands(systemCommands)
-  print(systemCommands)
   if systemCommands ~= nil then
     return systemCommands
   end
@@ -97,6 +97,7 @@ M.setup = function(opts)
   opts           = opts or {}
   M.listCommands = M.concatCommands(opts.listCommands, opts.systemCommands)
   M.borders      = opts.borders or M.borders
+  M.loadedSetup  = true
 end
 
 return M

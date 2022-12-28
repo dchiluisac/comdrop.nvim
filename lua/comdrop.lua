@@ -125,6 +125,9 @@ function M.init()
   entryBuffer = entry.buffer
   entryBorderWin = entry.winBorder
   M.setMappingPrompt()
+  if not internal.loadedSetup then
+    M.setup()
+  end
   M.updateView(0, internal.listCommands)
   watchKeyboard()
 end
