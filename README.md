@@ -7,6 +7,10 @@
 you as well as commands defined by other plugins in neovim.
 Just press a key and find the command you need.
 
+![Preview](https://i.imgur.com/52NNvnD.gif)
+
+![Preview](https://i.imgur.com/yTeM4jB.gif)
+
 ### Installation
 
 Using [vim-plug](https://github.com/junegunn/vim-plug)
