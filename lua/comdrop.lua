@@ -89,13 +89,36 @@ function M.runCommand()
   end
 end
 
-local function filter_inplace(t, val)
+local function filterCommands(t, val)
+  --TODO: refactor -- add distance validation
+  local txt = string.lower(val)
   local tableFilter = {}
   for _, v in ipairs(t) do
-    if string.find(string.lower(v.title), string.lower(val)) then
-      table.insert(tableFilter, v)
+    local title = string.lower(v.title)
+    local score = {}
+    local resulSearch = string.find(title, txt)
+    if resulSearch then
+      table.insert(score, true)
+    end
+    if resulSearch == 1 then
+      table.insert(score, true)
+    end
+    for i in string.gmatch(txt, "%S+") do
+      if string.find(title, i) then
+        table.insert(score, true)
+      end
+    end
+    for _, validate in pairs(score) do
+      if validate then
+        v['score'] = #score
+        table.insert(tableFilter, v)
+        break
+      end
     end
   end
+  table.sort(tableFilter, function(a, b)
+    return a.score > b.score
+  end)
   return tableFilter
 end
 
@@ -108,7 +131,7 @@ local function watchKeyboard()
       local str = api.nvim_get_current_line() or ''
       str = string.sub(str, 2, -1)
       local searchText = string.gsub(str, "%% ", "")
-      local filterList = filter_inplace(internal.listCommands, searchText)
+      local filterList = filterCommands(internal.listCommands, searchText)
       M.updateView(0, filterList)
     end
   })
