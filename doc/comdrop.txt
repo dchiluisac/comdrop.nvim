@@ -12,7 +12,6 @@ REQUIREMENTS                                              *comdrop-requirements*
 Comdrop works only with Neovim and was written with Neovim-0.5, so it is highly
 recommended to use Neovim version 0.5+.
 
-Comdrop uses |plenary.path|.
 ==============================================================================
 USAGE                                                            *comdrop-usage*
 
