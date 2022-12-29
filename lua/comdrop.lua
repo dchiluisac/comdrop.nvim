@@ -106,6 +106,7 @@ local function watchKeyboard()
     buffer = entryBuffer,
     callback = function()
       local str = api.nvim_get_current_line() or ''
+      str = string.sub(str, 2, -1)
       local searchText = string.gsub(str, "%% ", "")
       local filterList = filter_inplace(internal.listCommands, searchText)
       M.updateView(0, filterList)

@@ -18,7 +18,7 @@ function M.createBuffer(dim, type)
 end
 
 function M.createMain(width, height, setRow, setCol)
-  local title = " Commands list "
+  local title = " Commands "
   local dim = utils.getDimensionWin(width, height, setRow, setCol, title)
   local bufferInstance = M.createBuffer(dim, 'nofile')
   local buffer = bufferInstance.buffer
@@ -51,9 +51,11 @@ function M.createMain(width, height, setRow, setCol)
 end
 
 function M.createPromp(width, height, setRow, setCol)
-  local dim = utils.getDimensionWin(width, height, setRow, setCol)
+  local title = " Find "
+  local dim = utils.getDimensionWin(width, height, setRow, setCol, title)
   local bufferInstance = M.createBuffer(dim, 'prompt')
   local buffer = bufferInstance.buffer
+  vim.fn.prompt_setprompt(buffer, " ")
 
   local opts = {
     style = "minimal",
@@ -63,6 +65,11 @@ function M.createPromp(width, height, setRow, setCol)
     row = dim.row,
     col = dim.col,
   }
+
+  local borderBuffer = bufferInstance.borderBuffer
+  local firstLineBorder = api.nvim_buf_get_lines(borderBuffer, 0, 1, false)[1]
+  local startPos, endPos = string.find(firstLineBorder, title)
+  api.nvim_buf_add_highlight(borderBuffer, -1, hi.ComdropTitle.link, 0, startPos, endPos)
 
   local entryMain = api.nvim_open_win(buffer, true, opts)
   vim.schedule(function()
