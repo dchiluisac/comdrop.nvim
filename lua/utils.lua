@@ -4,6 +4,24 @@ local internal = require('internal')
 
 local M = {}
 
+function M.loadCommands()
+  local commands = {}
+  if internal.systemCommands then
+    local nvimCommands = vim.api.nvim_get_commands {}
+    local bufCommands = vim.api.nvim_buf_get_commands(0, {})
+    local systemCommands = vim.tbl_extend("force", {}, nvimCommands, bufCommands)
+    for key, value in pairs(systemCommands) do
+      if type(value) == "table" then
+        table.insert(commands, {
+          title = key,
+          command = value.name
+        })
+      end
+    end
+  end
+  internal.listCommands = vim.tbl_extend("force", {}, commands, internal.userListCommands)
+end
+
 function M.getDimensions(width, height, setRow, setCol)
   local widthWindow = api.nvim_get_option("columns")
   local heightWindow = api.nvim_get_option("lines")

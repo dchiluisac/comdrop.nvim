@@ -124,6 +124,7 @@ function M.init()
   entryBuffer = entry.buffer
   entryBorderWin = entry.winBorder
   M.setMappingPrompt()
+  utils.loadCommands()
   if not internal.loadedSetup then
     M.setup()
   end
