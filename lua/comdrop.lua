@@ -71,9 +71,17 @@ end
 
 function M.runCommand()
   local currentPosition = api.nvim_win_get_cursor(listWin)[1]
-  local str = api.nvim_buf_get_lines(listBuffer, currentPosition, currentPosition + 1, true)[1]
+  local status, res = pcall(function()
+    local str = api.nvim_buf_get_lines(listBuffer, currentPosition, currentPosition + 1, true)[1]
+    return str
+  end)
+
+  if not status then
+    M.closeWindow()
+    return
+  end
   M.closeWindow()
-  local commandSelected = string.gsub(str, "%s+", "")
+  local commandSelected = string.gsub(res, "%s+", "")
   commandSelected = string.gsub(commandSelected, ">", "")
   for _, value in ipairs(internal.listCommands) do
     local command = string.gsub(value.title, "%s+", "")
